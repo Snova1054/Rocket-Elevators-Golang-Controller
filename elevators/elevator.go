@@ -1,13 +1,13 @@
-package main
+package elevator
 
 type Elevator struct {
-	ID                    string
-	status                string
-	currentFloor          int
-	direction             string
-	door                  Door
-	floorRequestsList     int
-	completedRequestsList int
+	ID           string
+	status       string
+	currentFloor int
+	direction    string
+	// door                  Door
+	// floorRequestsList     int
+	// completedRequestsList int
 }
 
 func NewElevator(_elevatorID string) *Elevator {
@@ -16,7 +16,7 @@ func NewElevator(_elevatorID string) *Elevator {
 		status:       "idle",
 		currentFloor: 1,
 		direction:    "null",
-		door:         newDoor(1),
+		// door:         newDoor(1),
 	}
 	return &elevator
 }
