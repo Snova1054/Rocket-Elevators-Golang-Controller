@@ -1,12 +1,16 @@
 package main
 
-// type Battery struct {
+type Battery struct {
+	ID     int
+	status string
+	// columnsList             []Column
+	// floorRequestButtonsList []FloorRequestButton
+}
 
-// }
-
-// func NewBattery(_id, _amountOfColumns, _amountOfFloors, _amountOfBasements, _amountOfElevatorPerColumn int) *Battery {
-
-// }
+func NewBattery(_id, _amountOfColumns, _amountOfFloors, _amountOfBasements, _amountOfElevatorPerColumn int) *Battery {
+	battery := Battery{ID: _id, status: "online"}
+	return &battery
+}
 
 // func (b *Battery) findBestColumn(_requestedFloor int) *Column {
 
