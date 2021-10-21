@@ -5,8 +5,7 @@ type Door struct {
 	status string
 }
 
-func (d Door) newDoor(_ID int) *Door {
-	d.ID = _ID
-	d.status = "idle"
-	return &d
+func NewDoor(_ID int) *Door {
+	door := Door{ID: _ID, status: "closed"}
+	return &door
 }
