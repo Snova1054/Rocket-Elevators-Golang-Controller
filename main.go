@@ -6,7 +6,14 @@ import (
 
 func main() {
 
-	fmt.Print("Hello")
+	fmt.Println("Hello")
+
+	var elevator *Elevator = NewElevator("1")
+	fmt.Println("Elevator's floor is", elevator.currentFloor)
+	elevator.addNewRequest(-12)
+	elevator.move()
+	fmt.Println("Elevator's floor is", elevator.currentFloor)
+
 	// scenarioNumber, err := strconv.Atoi(os.Args[1])
 	// if err != nil {
 	// 	runScenario(scenarioNumber)
