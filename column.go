@@ -72,9 +72,12 @@ func (c *Column) createElevators(_amountOfFloors int, _amountOfElevators int) {
 
 //Simulate when a user press a button on a floor to go back to the first floor
 func (c *Column) requestElevator(_requestedFloor int, _direction string) *Elevator {
+	fmt.Printf("An elevator has been requested for the floor %d to go %s\n\n", _requestedFloor, _direction)
 	bestElevator := c.findElevator(_requestedFloor, _direction)
+	fmt.Printf("Elevator %q on the floor #%d has been selected as the best elevator\n\n", bestElevator.ID, bestElevator.currentFloor)
 	bestElevator.addNewRequest(_requestedFloor)
 	bestElevator.move()
+
 	fmt.Print(bestElevator.currentFloor)
 	bestElevator.addNewRequest(1)
 	bestElevator.move()

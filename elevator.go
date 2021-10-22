@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sort"
 )
 
@@ -40,15 +41,18 @@ func (e *Elevator) move() {
 					e.direction = "up"
 					sort.Ints(e.floorRequestsList)
 					for e.currentFloor < destination {
+						fmt.Printf("Elevator %q is on the floor #%d\n", e.ID, e.currentFloor)
 						e.currentFloor++
 					}
 				} else if e.currentFloor > destination {
 					e.direction = "down"
 					sort.Sort(sort.Reverse(sort.IntSlice(e.floorRequestsList)))
 					for e.currentFloor > destination {
+						fmt.Printf("Elevator %q is on the floor #%d\n", e.ID, e.currentFloor)
 						e.currentFloor--
 					}
 				}
+				fmt.Printf("Elevator %q has arrived at the floor %d\n", e.ID, e.currentFloor)
 				e.status = "stopped"
 				e.operateDoors()
 				e.floorRequestsList = e.floorRequestsList[1:i]
@@ -61,7 +65,9 @@ func (e *Elevator) move() {
 //Method used by the Elevator to operate its Doors
 func (e *Elevator) operateDoors() {
 	e.door.status = "opened"
+	fmt.Println("Elevator's doors have opened")
 	//Wait 5 seconds
+	fmt.Printf("Elevator's doors have closed\n\n")
 	e.door.status = "closed"
 }
 

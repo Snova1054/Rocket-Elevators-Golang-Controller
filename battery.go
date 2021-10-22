@@ -89,12 +89,13 @@ func (b *Battery) createFloorRequestButtons(_amountOfFloors float64) {
 
 //Method used to assign the best Elevator according to the best Column from the user's inputs
 func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Column, *Elevator) {
+	fmt.Printf("An elevator has been requested for the floor %d to go %s\n\n", _requestedFloor, _direction)
 	bestColumn := b.findBestColumn(_requestedFloor)
 	bestElevator := (bestColumn).findElevator(1, _direction)
-	fmt.Printf("Best Elevator's ID is %q and its current floor is %d \n", bestElevator.ID, bestElevator.currentFloor)
+	fmt.Printf("Elevator %q hon the floor #%d has been selected as the best elevator\n\n", bestElevator.ID, bestElevator.currentFloor)
 	bestElevator.addNewRequest(1)
 	bestElevator.move()
-	fmt.Printf("Requested floor is %d \n", _requestedFloor)
+
 	bestElevator.addNewRequest(_requestedFloor)
 	bestElevator.move()
 	return bestColumn, bestElevator
