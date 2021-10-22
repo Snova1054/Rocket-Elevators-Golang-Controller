@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"math"
-	"sort"
 )
 
 var columnID rune = 'A'
@@ -27,6 +25,7 @@ func NewBattery(_id int, _amountOfColumns int, _amountOfFloors int, _amountOfBas
 
 	battery.createFloorRequestButtons(float64(_amountOfFloors))
 	battery.createColumns(float64(_amountOfColumns), float64(_amountOfFloors), _amountOfElevatorPerColumn)
+	columnID = 'A'
 	return &battery
 }
 
@@ -84,23 +83,23 @@ func (b *Battery) createFloorRequestButtons(_amountOfFloors float64) {
 func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Column, *Elevator) {
 	bestColumn := b.findBestColumn(_requestedFloor)
 	bestElevator := bestColumn.findElevator(1, _direction)
-	fmt.Printf("Best Elevator's ID is %s and its current floor is %d", bestElevator.ID, bestElevator.currentFloor)
+	// fmt.Printf("Best Elevator's ID is %q and its current floor is %d \n", bestElevator.ID, bestElevator.currentFloor)
 	bestElevator.addNewRequest(1)
 	bestElevator.move()
-
+	// fmt.Printf("Requested floor is %d \n", _requestedFloor)
 	bestElevator.addNewRequest(_requestedFloor)
 	bestElevator.move()
-
-	return &bestColumn, &bestElevator
+	return bestColumn, bestElevator
 }
 
-func (b *Battery) findBestColumn(_requestedFloor int) Column {
-	returnedObject := b.columnsList[1]
-	for _, column := range b.columnsList {
-		indexFound := sort.SearchInts(column.servedFloors, _requestedFloor)
-		if column.servedFloors[indexFound-1] == _requestedFloor {
-			returnedObject = column
+func (b *Battery) findBestColumn(_requestedFloor int) *Column {
+	var returnedColumn *Column
+	for i := 0; i < len(b.columnsList); i++ {
+		for j := 0; j < len(b.columnsList[i].servedFloors); j++ {
+			if b.columnsList[i].servedFloors[j] == _requestedFloor {
+				returnedColumn = &b.columnsList[i]
+			}
 		}
 	}
-	return returnedObject
+	return returnedColumn
 }

@@ -1,18 +1,14 @@
 package main
 
-import (
-	"fmt"
-)
-
 var battery *Battery = NewBattery(1, 4, 60, 6, 5)
 
-func moveAllElevators(c *Column) {
-	for i := 0; i < len(c.elevatorsList); i++ {
-		for len(c.elevatorsList[i].floorRequestsList) != 0 {
-			c.elevatorsList[i].move()
-		}
-	}
-}
+// func moveAllElevators(c *Column) {
+// 	for i := 0; i < len(c.elevatorsList); i++ {
+// 		for len(c.elevatorsList[i].floorRequestsList) != 0 {
+// 			c.elevatorsList[i].move()
+// 		}
+// 	}
+// }
 
 func scenario1() (*Column, *Elevator) {
 	column := battery.columnsList[1]
@@ -141,18 +137,18 @@ func scenario4() *Elevator {
 	return chosenElevator
 }
 
-func runScenario(scenarioNumber int) {
-	switch scenarioNumber {
-	case 1:
-		scenario1()
-	case 2:
-		scenario2()
-	case 3:
-		scenario3()
-	case 4:
-		scenario4()
-	default:
-		fmt.Println("Invalid scenario number")
-	}
+// func runScenario(scenarioNumber int) {
+// 	switch scenarioNumber {
+// 	case 1:
+// 		scenario1()
+// 	case 2:
+// 		scenario2()
+// 	case 3:
+// 		scenario3()
+// 	case 4:
+// 		scenario4()
+// 	default:
+// 		fmt.Println("Invalid scenario number")
+// 	}
 
-}
+// }
