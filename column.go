@@ -8,17 +8,18 @@ import (
 var elevatorID rune = 'A'
 
 type Column struct {
-	ID                       string
-	status                   string
-	servedFloors             []int
-	isBasement               bool
-	elevatorsList            []Elevator
-	callButtonsList          []CallButton
-	bestElevatorInformations struct {
-		bestElevator Elevator
-		bestScore    int
-		referenceGap float64
-	}
+	ID              string
+	status          string
+	servedFloors    []int
+	isBasement      bool
+	elevatorsList   []Elevator
+	callButtonsList []CallButton
+}
+
+type BestElevatorInformations struct {
+	bestElevator *Elevator
+	bestScore    int
+	referenceGap float64
 }
 
 func NewColumn(_id string, _amountOfElevators int, _servedFloors []int, _isBasement bool) *Column {
@@ -61,65 +62,63 @@ func (c *Column) createElevators(_amountOfFloors int, _amountOfElevators int) {
 //Simulate when a user press a button on a floor to go back to the first floor
 func (c *Column) requestElevator(_requestedFloor int, _direction string) *Elevator {
 	var bestElevator = c.findElevator(_requestedFloor, _direction)
-	bestElevator.addNewRequest(_requestedFloor)
-	bestElevator.move()
+	(*Elevator).addNewRequest(bestElevator, _requestedFloor)
+	(*Elevator).move(bestElevator)
 	fmt.Print(bestElevator.currentFloor)
-	bestElevator.addNewRequest(1)
-	bestElevator.move()
+	(*Elevator).addNewRequest(bestElevator, 1)
+	(*Elevator).move(bestElevator)
 
 	return bestElevator
 }
 
 func (c *Column) findElevator(_requestedFloor int, _requestedDirection string) *Elevator {
-	c.bestElevatorInformations.bestElevator = c.elevatorsList[0]
-	c.bestElevatorInformations.bestScore = 6
-	c.bestElevatorInformations.referenceGap = float64(len(c.servedFloors)) * 2
+	bestElevatorInformations := BestElevatorInformations{&c.elevatorsList[0], 6, 100000}
 
 	if _requestedFloor == 1 {
 		for _, elevator := range c.elevatorsList {
 			if elevator.currentFloor == 1 && elevator.status == "stopped" {
-				c.checkIfElevatorIsBetter(1, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(1, &elevator, bestElevatorInformations, _requestedFloor)
 			} else if elevator.currentFloor == 1 && elevator.status == "idle" {
-				c.checkIfElevatorIsBetter(2, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(2, &elevator, bestElevatorInformations, _requestedFloor)
 			} else if elevator.currentFloor < 1 && elevator.direction == "up" {
-				c.checkIfElevatorIsBetter(3, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(3, &elevator, bestElevatorInformations, _requestedFloor)
 			} else if elevator.currentFloor > 1 && elevator.direction == "down" {
-				c.checkIfElevatorIsBetter(3, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(3, &elevator, bestElevatorInformations, _requestedFloor)
 			} else if elevator.status == "idle" {
-				c.checkIfElevatorIsBetter(4, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(4, &elevator, bestElevatorInformations, _requestedFloor)
 			} else {
-				c.checkIfElevatorIsBetter(5, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(5, &elevator, bestElevatorInformations, _requestedFloor)
 			}
 		}
 	} else {
 		for _, elevator := range c.elevatorsList {
 			if elevator.currentFloor == _requestedFloor && elevator.status == "stopped" && elevator.direction == _requestedDirection {
-				c.checkIfElevatorIsBetter(1, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(1, &elevator, bestElevatorInformations, _requestedFloor)
 			} else if elevator.currentFloor < _requestedFloor && elevator.direction == "up" && _requestedDirection == "up" {
-				c.checkIfElevatorIsBetter(2, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(2, &elevator, bestElevatorInformations, _requestedFloor)
 			} else if elevator.currentFloor > _requestedFloor && elevator.direction == "down" && _requestedDirection == "down" {
-				c.checkIfElevatorIsBetter(2, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(2, &elevator, bestElevatorInformations, _requestedFloor)
 			} else if elevator.status == "idle" {
-				c.checkIfElevatorIsBetter(4, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(4, &elevator, bestElevatorInformations, _requestedFloor)
 			} else {
-				c.checkIfElevatorIsBetter(5, elevator, _requestedFloor)
+				bestElevatorInformations = c.checkIfElevatorIsBetter(5, &elevator, bestElevatorInformations, _requestedFloor)
 			}
 		}
 	}
-	return &c.bestElevatorInformations.bestElevator
+	return bestElevatorInformations.bestElevator
 }
 
-func (c *Column) checkIfElevatorIsBetter(_scoreToCheck int, _newElevator Elevator, _floor int) {
-	if _scoreToCheck < c.bestElevatorInformations.bestScore {
-		c.bestElevatorInformations.bestScore = _scoreToCheck
-		c.bestElevatorInformations.bestElevator = _newElevator
-		c.bestElevatorInformations.referenceGap = math.Abs(float64(_newElevator.currentFloor) - float64(_floor))
-	} else if c.bestElevatorInformations.bestScore == _scoreToCheck {
-		gap := math.Abs(float64(_newElevator.currentFloor) - float64(_floor))
-		if c.bestElevatorInformations.referenceGap > gap {
-			c.bestElevatorInformations.bestElevator = _newElevator
-			c.bestElevatorInformations.referenceGap = gap
+func (c *Column) checkIfElevatorIsBetter(_scoreToCheck int, _newElevator *Elevator, bestElevatorInformations BestElevatorInformations, _floor int) BestElevatorInformations {
+	if _scoreToCheck < bestElevatorInformations.bestScore {
+		bestElevatorInformations.bestScore = _scoreToCheck
+		bestElevatorInformations.bestElevator = _newElevator
+		bestElevatorInformations.referenceGap = math.Abs(float64(_newElevator.currentFloor) / float64(_floor))
+	} else if bestElevatorInformations.bestScore == _scoreToCheck {
+		gap := math.Abs(float64(_newElevator.currentFloor) / float64(_floor))
+		if bestElevatorInformations.referenceGap > gap {
+			bestElevatorInformations.bestElevator = _newElevator
+			bestElevatorInformations.referenceGap = gap
 		}
 	}
-
+	return bestElevatorInformations
 }
