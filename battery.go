@@ -16,7 +16,7 @@ type Battery struct {
 }
 
 func NewBattery(_id int, _amountOfColumns int, _amountOfFloors int, _amountOfBasements int, _amountOfElevatorPerColumn int) *Battery {
-	battery := Battery{ID: _id, status: "online"}
+	battery := Battery{ID: _id, status: "online", columnsList: []Column{}, floorRequestButtonsList: []FloorRequestButton{}}
 
 	if _amountOfBasements > 0 {
 		battery.createBasementColumn(_amountOfBasements, _amountOfElevatorPerColumn)
@@ -83,7 +83,7 @@ func (b *Battery) createFloorRequestButtons(_amountOfFloors float64) {
 
 func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Column, *Elevator) {
 	bestColumn := b.findBestColumn(_requestedFloor)
-	bestElevator := bestColumn.findElevator(1, _direction)
+	bestElevator := (bestColumn).findElevator(1, _direction)
 	fmt.Printf("Best Elevator's ID is %q and its current floor is %d \n", bestElevator.ID, bestElevator.currentFloor)
 	bestElevator.addNewRequest(1)
 	bestElevator.move()

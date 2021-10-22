@@ -23,10 +23,16 @@ type BestElevatorInformations struct {
 }
 
 func NewColumn(_id string, _amountOfElevators int, _servedFloors []int, _isBasement bool) *Column {
-	column := Column{ID: _id, status: "online", servedFloors: _servedFloors, isBasement: _isBasement}
+	column := new(Column)
+	column.ID = _id
+	column.status = "online"
+	column.servedFloors = _servedFloors
+	column.isBasement = _isBasement
+	column.elevatorsList = []Elevator{}
+	column.callButtonsList = []CallButton{}
 	column.createElevators(len(_servedFloors), _amountOfElevators)
 	column.createCallButtons(len(_servedFloors), _isBasement)
-	return &column
+	return column
 }
 
 func (c *Column) createCallButtons(_amountOfFloors int, _isBasement bool) {
@@ -61,64 +67,68 @@ func (c *Column) createElevators(_amountOfFloors int, _amountOfElevators int) {
 
 //Simulate when a user press a button on a floor to go back to the first floor
 func (c *Column) requestElevator(_requestedFloor int, _direction string) *Elevator {
-	var bestElevator = c.findElevator(_requestedFloor, _direction)
-	(*Elevator).addNewRequest(bestElevator, _requestedFloor)
-	(*Elevator).move(bestElevator)
+	bestElevator := c.findElevator(_requestedFloor, _direction)
+	bestElevator.addNewRequest(_requestedFloor)
+	bestElevator.move()
 	fmt.Print(bestElevator.currentFloor)
-	(*Elevator).addNewRequest(bestElevator, 1)
-	(*Elevator).move(bestElevator)
+	bestElevator.addNewRequest(1)
+	bestElevator.move()
 
 	return bestElevator
 }
 
 func (c *Column) findElevator(_requestedFloor int, _requestedDirection string) *Elevator {
-	bestElevatorInformations := BestElevatorInformations{&c.elevatorsList[0], 6, 100000}
+	bestElevatorInformations := BestElevatorInformations{&c.elevatorsList[0], 6, float64(len(c.servedFloors) * 2)}
 
 	if _requestedFloor == 1 {
-		for _, elevator := range c.elevatorsList {
-			if elevator.currentFloor == 1 && elevator.status == "stopped" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(1, &elevator, bestElevatorInformations, _requestedFloor)
-			} else if elevator.currentFloor == 1 && elevator.status == "idle" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(2, &elevator, bestElevatorInformations, _requestedFloor)
-			} else if elevator.currentFloor < 1 && elevator.direction == "up" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(3, &elevator, bestElevatorInformations, _requestedFloor)
-			} else if elevator.currentFloor > 1 && elevator.direction == "down" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(3, &elevator, bestElevatorInformations, _requestedFloor)
-			} else if elevator.status == "idle" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(4, &elevator, bestElevatorInformations, _requestedFloor)
+		for i := 0; i < len(c.elevatorsList); i++ {
+			if c.elevatorsList[i].currentFloor == 1 && c.elevatorsList[i].status == "stopped" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(1, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
+			} else if c.elevatorsList[i].currentFloor == 1 && c.elevatorsList[i].status == "idle" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(2, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
+			} else if c.elevatorsList[i].currentFloor < 1 && c.elevatorsList[i].direction == "up" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(3, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
+			} else if c.elevatorsList[i].currentFloor > 1 && c.elevatorsList[i].direction == "down" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(3, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
+			} else if c.elevatorsList[i].status == "idle" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(4, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
 			} else {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(5, &elevator, bestElevatorInformations, _requestedFloor)
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(5, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
 			}
+
 		}
 	} else {
-		for _, elevator := range c.elevatorsList {
-			if elevator.currentFloor == _requestedFloor && elevator.status == "stopped" && elevator.direction == _requestedDirection {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(1, &elevator, bestElevatorInformations, _requestedFloor)
-			} else if elevator.currentFloor < _requestedFloor && elevator.direction == "up" && _requestedDirection == "up" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(2, &elevator, bestElevatorInformations, _requestedFloor)
-			} else if elevator.currentFloor > _requestedFloor && elevator.direction == "down" && _requestedDirection == "down" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(2, &elevator, bestElevatorInformations, _requestedFloor)
-			} else if elevator.status == "idle" {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(4, &elevator, bestElevatorInformations, _requestedFloor)
+		for i := 0; i < len(c.elevatorsList); i++ {
+			if c.elevatorsList[i].currentFloor == _requestedFloor && c.elevatorsList[i].status == "stopped" && c.elevatorsList[i].direction == _requestedDirection {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(1, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
+			} else if c.elevatorsList[i].currentFloor < _requestedFloor && c.elevatorsList[i].direction == "up" && _requestedDirection == "up" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(2, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
+			} else if c.elevatorsList[i].currentFloor > _requestedFloor && c.elevatorsList[i].direction == "down" && _requestedDirection == "down" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(2, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
+			} else if c.elevatorsList[i].status == "idle" {
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(4, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
 			} else {
-				bestElevatorInformations = c.checkIfElevatorIsBetter(5, &elevator, bestElevatorInformations, _requestedFloor)
+				bestElevatorInformations = *c.checkIfElevatorIsBetter(5, &c.elevatorsList[i], bestElevatorInformations, _requestedFloor)
 			}
 		}
 	}
 	return bestElevatorInformations.bestElevator
 }
 
-func (c *Column) checkIfElevatorIsBetter(_scoreToCheck int, _newElevator *Elevator, bestElevatorInformations BestElevatorInformations, _floor int) BestElevatorInformations {
+func (c *Column) checkIfElevatorIsBetter(_scoreToCheck int, _newElevator *Elevator, bestElevatorInformations BestElevatorInformations, _floor int) *BestElevatorInformations {
 	if _scoreToCheck < bestElevatorInformations.bestScore {
 		bestElevatorInformations.bestScore = _scoreToCheck
 		bestElevatorInformations.bestElevator = _newElevator
-		bestElevatorInformations.referenceGap = math.Abs(float64(_newElevator.currentFloor) / float64(_floor))
+		bestElevatorInformations.referenceGap = math.Abs(float64(_newElevator.currentFloor) - float64(_floor))
 	} else if bestElevatorInformations.bestScore == _scoreToCheck {
-		gap := math.Abs(float64(_newElevator.currentFloor) / float64(_floor))
+		gap := math.Abs(float64(_newElevator.currentFloor) - float64(_floor))
 		if bestElevatorInformations.referenceGap > gap {
 			bestElevatorInformations.bestElevator = _newElevator
 			bestElevatorInformations.referenceGap = gap
 		}
 	}
-	return bestElevatorInformations
+	return &bestElevatorInformations
+}
+func (c *Column) getPointer() {
+
 }

@@ -15,9 +15,14 @@ type Elevator struct {
 }
 
 func NewElevator(_elevatorID string) *Elevator {
-	var theNewDoor *Door = NewDoor(1)
-	elevator := Elevator{ID: _elevatorID, status: "idle", currentFloor: 1, direction: "null", door: *theNewDoor}
-	return &elevator
+
+	elevator := new(Elevator)
+	elevator.ID = _elevatorID
+	elevator.status = "idle"
+	elevator.currentFloor = 1
+	elevator.direction = ""
+	elevator.door = *NewDoor(1)
+	return elevator
 }
 
 func (e *Elevator) move() {
@@ -58,8 +63,7 @@ func (e *Elevator) operateDoors() {
 
 func (e *Elevator) addNewRequest(_requestedFloor int) {
 	e.completedRequestsList = append(e.completedRequestsList, _requestedFloor)
-	indexFound := sort.SearchInts(e.floorRequestsList, _requestedFloor)
-	if len(e.floorRequestsList) == 0 || e.floorRequestsList[indexFound] != _requestedFloor {
+	if !contains(e.floorRequestsList, _requestedFloor) {
 		e.floorRequestsList = append(e.floorRequestsList, _requestedFloor)
 	}
 	if e.currentFloor < _requestedFloor {
