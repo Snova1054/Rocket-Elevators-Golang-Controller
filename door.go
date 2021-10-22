@@ -1,5 +1,6 @@
 package main
 
+//Declares each Door
 type Door struct {
 	ID     int
 	status string
