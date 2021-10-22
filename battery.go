@@ -8,6 +8,7 @@ import (
 var columnID rune = 'A'
 var floorRequestButtonID int = 1
 
+//Declares each Battery
 type Battery struct {
 	ID                      int
 	status                  string
@@ -15,6 +16,7 @@ type Battery struct {
 	floorRequestButtonsList []FloorRequestButton
 }
 
+//Function used to create new Batteries with the desired properties
 func NewBattery(_id int, _amountOfColumns int, _amountOfFloors int, _amountOfBasements int, _amountOfElevatorPerColumn int) *Battery {
 	battery := Battery{ID: _id, status: "online", columnsList: []Column{}, floorRequestButtonsList: []FloorRequestButton{}}
 
@@ -30,6 +32,7 @@ func NewBattery(_id int, _amountOfColumns int, _amountOfFloors int, _amountOfBas
 	return &battery
 }
 
+//Method used by the Battery to create a basement Column
 func (b *Battery) createBasementColumn(_amountOfBasements int, _amountOfElevatorPerColumn int) {
 	var servedFloors []int
 	floor := -1
@@ -42,6 +45,7 @@ func (b *Battery) createBasementColumn(_amountOfBasements int, _amountOfElevator
 	columnID++
 }
 
+//Method used to create Columns
 func (b *Battery) createColumns(_amountOfColumns float64, _amountOfFloors float64, _amountOfElevatorPerColumn int) {
 	amountOfFloorsPerColumn := math.Ceil(_amountOfFloors / float64(_amountOfColumns))
 	floor := 1
@@ -61,6 +65,7 @@ func (b *Battery) createColumns(_amountOfColumns float64, _amountOfFloors float6
 	}
 }
 
+//Method used to create basement FloorRequestButtons
 func (b *Battery) createBasementFloorRequestButtons(_amountOfBasements int) {
 	buttonFloor := -1
 	for i := 0; i < _amountOfBasements; i++ {
@@ -71,6 +76,7 @@ func (b *Battery) createBasementFloorRequestButtons(_amountOfBasements int) {
 	}
 }
 
+//Method used to create FloorRequestButtons
 func (b *Battery) createFloorRequestButtons(_amountOfFloors float64) {
 	buttonFloor := 1
 	for i := 0; i < int(_amountOfFloors); i++ {
@@ -81,6 +87,7 @@ func (b *Battery) createFloorRequestButtons(_amountOfFloors float64) {
 	}
 }
 
+//Method used to assign the best Elevator according to the best Column from the user's inputs
 func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Column, *Elevator) {
 	bestColumn := b.findBestColumn(_requestedFloor)
 	bestElevator := (bestColumn).findElevator(1, _direction)
@@ -93,6 +100,7 @@ func (b *Battery) assignElevator(_requestedFloor int, _direction string) (*Colum
 	return bestColumn, bestElevator
 }
 
+//Method used to find the best Column
 func (b *Battery) findBestColumn(_requestedFloor int) *Column {
 	for i := 0; i < len(b.columnsList); i++ {
 		var returnedColumn = b.columnsList[i]

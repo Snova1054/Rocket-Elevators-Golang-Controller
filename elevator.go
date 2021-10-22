@@ -4,6 +4,7 @@ import (
 	"sort"
 )
 
+//Declares each Elevator
 type Elevator struct {
 	ID                    string
 	status                string
@@ -14,6 +15,7 @@ type Elevator struct {
 	completedRequestsList []int
 }
 
+//Function used to create new Elevators with the desired properties
 func NewElevator(_elevatorID string) *Elevator {
 
 	elevator := new(Elevator)
@@ -25,6 +27,7 @@ func NewElevator(_elevatorID string) *Elevator {
 	return elevator
 }
 
+//Method used by the Column or the Battery to move the Elevator
 func (e *Elevator) move() {
 	for {
 		if len(e.floorRequestsList) == 0 {
@@ -55,12 +58,14 @@ func (e *Elevator) move() {
 	e.status = "idle"
 }
 
+//Method used by the Elevator to operate its Doors
 func (e *Elevator) operateDoors() {
 	e.door.status = "opened"
 	//Wait 5 seconds
 	e.door.status = "closed"
 }
 
+//Method used to add new floor requests
 func (e *Elevator) addNewRequest(_requestedFloor int) {
 	e.completedRequestsList = append(e.completedRequestsList, _requestedFloor)
 	if !contains(e.floorRequestsList, _requestedFloor) {

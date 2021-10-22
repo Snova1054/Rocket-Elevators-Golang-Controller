@@ -7,6 +7,7 @@ import (
 
 var elevatorID rune = 'A'
 
+//Declares each Column
 type Column struct {
 	ID              string
 	status          string
@@ -16,12 +17,14 @@ type Column struct {
 	callButtonsList []CallButton
 }
 
+//Declares a BestElevatorInformations before using it in the method : findElevator
 type BestElevatorInformations struct {
 	bestElevator *Elevator
 	bestScore    int
 	referenceGap float64
 }
 
+//Function used to create new Columns with the desired properties
 func NewColumn(_id string, _amountOfElevators int, _servedFloors []int, _isBasement bool) *Column {
 	column := new(Column)
 	column.ID = _id
@@ -35,6 +38,7 @@ func NewColumn(_id string, _amountOfElevators int, _servedFloors []int, _isBasem
 	return column
 }
 
+//Method used by the Column to create Call Buttons
 func (c *Column) createCallButtons(_amountOfFloors int, _isBasement bool) {
 	callButtonID := 1 // Look for global variable
 	if _isBasement {
@@ -56,6 +60,7 @@ func (c *Column) createCallButtons(_amountOfFloors int, _isBasement bool) {
 	}
 }
 
+//Method used to create Elevators
 func (c *Column) createElevators(_amountOfFloors int, _amountOfElevators int) {
 	elevatorID = 'A'
 	for i := 0; i < _amountOfElevators; i++ {
@@ -77,6 +82,7 @@ func (c *Column) requestElevator(_requestedFloor int, _direction string) *Elevat
 	return bestElevator
 }
 
+//Method used to find the best Elevator possible
 func (c *Column) findElevator(_requestedFloor int, _requestedDirection string) *Elevator {
 	bestElevatorInformations := BestElevatorInformations{&c.elevatorsList[0], 6, float64(len(c.servedFloors) * 2)}
 
@@ -115,6 +121,7 @@ func (c *Column) findElevator(_requestedFloor int, _requestedDirection string) *
 	return bestElevatorInformations.bestElevator
 }
 
+//Method used to compared a new Elevator's information with the bestElevator's
 func (c *Column) checkIfElevatorIsBetter(_scoreToCheck int, _newElevator *Elevator, bestElevatorInformations BestElevatorInformations, _floor int) *BestElevatorInformations {
 	if _scoreToCheck < bestElevatorInformations.bestScore {
 		bestElevatorInformations.bestScore = _scoreToCheck
@@ -128,7 +135,4 @@ func (c *Column) checkIfElevatorIsBetter(_scoreToCheck int, _newElevator *Elevat
 		}
 	}
 	return &bestElevatorInformations
-}
-func (c *Column) getPointer() {
-
 }
