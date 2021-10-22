@@ -20,7 +20,6 @@ func NewElevator(_elevatorID string) *Elevator {
 	return &elevator
 }
 
-//moving method, need to test it
 func (e *Elevator) move() {
 	for {
 		if len(e.floorRequestsList) == 0 {
@@ -43,7 +42,7 @@ func (e *Elevator) move() {
 					}
 				}
 				e.status = "stopped"
-				//operateDoors()
+				e.operateDoors()
 				e.floorRequestsList = e.floorRequestsList[1:i]
 			}
 		}

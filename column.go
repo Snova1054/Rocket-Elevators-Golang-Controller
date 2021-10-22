@@ -5,6 +5,8 @@ import (
 	"math"
 )
 
+var elevatorID rune = 'A'
+
 type Column struct {
 	ID              string
 	status          string
@@ -43,7 +45,6 @@ func (c *Column) createCallButtons(_amountOfFloors int, _isBasement bool) {
 }
 
 func (c *Column) createElevators(_amountOfFloors int, _amountOfElevators int) {
-	elevatorID := 'A'
 	for i := 0; i < _amountOfElevators; i++ {
 		var elevator = NewElevator(string(elevatorID))
 		c.elevatorsList = append(c.elevatorsList, *elevator)
